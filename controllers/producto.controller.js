@@ -1,80 +1,65 @@
-const Product = require('../models/producto.model');
+const Producto = require('../models/producto.model');
 
-//recuperacion de productos
-const recProducts = async(req, res) => {
+// Obtener todos los productos
+const getAllProducts = async (req, res) => {
     try {
-        const Products = await Product.find({});
-        res.status(200).json(Products);
+        const productos = await Producto.find();
+        res.status(200).json(productos);
     } catch (error) {
-        res.status(500).json({ message: 'Ocurrio un error ' + error.message });
+        res.status(500).json({ message: 'Error: ' + error.message });
     }
-}
+};
 
-// Función para recuperar un producto usando su identificador
-// const getItemsById = async(req, res) => {
-//     try { 
-//         const { id } = req.params;
-//         const _Item = await Item.find({'_id': id});
-//         res.status(200).json(_Item);
-//     } catch (error) {
-//         res.status(500).json({ message: 'Ocurrio un error ' + error.message });
-//     }
-// }
-
-// // Función para recuperar un _Item usando su nickname y contraseña
-// const getItemsByType = async(req, res) => {
-//     try {
-//         const type = req.body.type;
-//         const _Item = await Item.find({'type': type});
-//         res.status(200).json(_Item);
-//     } catch (error) {
-//         res.status(500).json({ message: 'Ocurrio un error ' + error.message });
-//     }
-// }
-
-// Función crear un produvto
-const crearProduct = async(req, res) => {
-    try {
-        const _Prod = await Product.create( req.body );
-        res.status(200).json(_Prod);
-    } catch (error) {
-        res.status(500).json({ message: 'Ocurrio un error ' + error.message });
-    }
-}
-
-// Función para actualizar info de producto
-const updateProductID = async(req, res) => {
+// Obtener un producto por ID
+const getProductById = async (req, res) => {
     try {
         const { id } = req.params;
-        const _Prod = await Item.findByIdAndUpdate(id, req.body);
-        if (!_Prod)
-            return res.status(400).json({ message: 'No existe tal producto registrado' });
-        const _prodctualizado = await Item.find({ '_id':id });
-        res.status(200).json(_prodctualizado);
+        const producto = await Producto.findById(id);
+        if (!producto) return res.status(404).json({ message: 'Producto no encontrado' });
+        res.status(200).json(producto);
     } catch (error) {
-        res.status(500).json({ message: 'Ocurrio un error ' + error.message });
+        res.status(500).json({ message: 'Error: ' + error.message });
     }
-}
+};
 
-// eliminar producto con el id
-const deleteprodID = async(req, res) => {
+// Crear un nuevo producto
+const createProduct = async (req, res) => {
+    try {
+        const producto = await Producto.create(req.body);
+        res.status(201).json(producto);
+    } catch (error) {
+        res.status(500).json({ message: 'Error: ' + error.message });
+    }
+};
+
+// Actualizar un producto por ID
+const updateProductById = async (req, res) => {
     try {
         const { id } = req.params;
-        const _Prod = await Product.find({'_id': id});
-        if (!_Prod)
-            return res.status(400).json({ message: 'No se eliminó nada' });
-        const Eliminado = await Product.deleteOne({ '_id':id });
-        res.status(200).json({ message: 'Se eliminó correctamente el producto seleccionado' });
+        const producto = await Producto.findByIdAndUpdate(id, req.body, { new: true });
+        if (!producto) return res.status(404).json({ message: 'Producto no encontrado' });
+        res.status(200).json(producto);
     } catch (error) {
-        res.status(500).json({ message: 'Ocurrio un error ' + error.message });
+        res.status(500).json({ message: 'Error: ' + error.message });
     }
-}
+};
+
+// Eliminar un producto por ID
+const deleteProductById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const producto = await Producto.findByIdAndDelete(id);
+        if (!producto) return res.status(404).json({ message: 'Producto no encontrado' });
+        res.status(200).json({ message: 'Producto eliminado correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error: ' + error.message });
+    }
+};
 
 module.exports = {
-    recProducts,
-    // getItemsById,
-    crearProduct,
-    updateProductID,
-    deleteprodID,
-    // getItemsByType
-}
+    getAllProducts,
+    getProductById,
+    createProduct,
+    updateProductById,
+    deleteProductById
+};
