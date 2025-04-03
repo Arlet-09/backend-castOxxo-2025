@@ -1,28 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const {
-    getUsers,
-    getUsersById,
+    getAllUsers,
+    getUserById,
     createUser,
     updateUserById,
-    deleteUserById,
-    getUsersByUserPass,
-    getUsersByNickPass
+    deleteUserById
 } = require('../controllers/usuario.controller');
 
-// Endpoint para la recuperación de la colección de usuarios
-router.get('/all', getUsers);
-// Endopint para la recuperación de un usuario
-router.get('/byId/:id', getUsersById);
-// Endpoint para la recuperación de un usuario usando su nickname
-router.get('/byNick/:nickname', getUsersByNickPass);
-// Endopint para la recuperación de un usuario usando su nickname
-router.post('/byNickname', getUsersByUserPass);
-// Endpoint para la creación de un usuario
-router.post('/add', createUser);
-// Endpoint para la actualización de un usuario
-router.put('/update/:id', updateUserById);
-// Endpoint para la eliminación de un usuario
-router.delete('/delete/:id', deleteUserById);
+// Obtener todos los usuarios
+router.get('/', getAllUsers);
+
+// Obtener un usuario por ID
+router.get('/:id', getUserById);
+
+// Crear un nuevo usuario
+router.post('/', createUser);
+
+// Actualizar un usuario por ID
+router.put('/:id', updateUserById);
+
+// Eliminar un usuario por ID
+router.delete('/:id', deleteUserById);
 
 module.exports = router;
