@@ -1,98 +1,65 @@
 const Usuario = require('../models/usuario.model');
 
-// // Función para recuperar toda la colección de usuarios
-// const getUsers = async(req, res) => {
-//     try {
-//         const Users = await User.find({});
-//         res.status(200).json(Users);
-//     } catch (error) {
-//         res.status(500).json({ message: 'Ocurrio un error ' + error.message });
-//     }
-// }
-
-// Función para recuperar un usuario usando su identificador
-// const getUsersById = async(req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const Usuario = await User.find({'_id': id});
-//         res.status(200).json(Usuario);
-//     } catch (error) {
-//         res.status(500).json({ message: 'Ocurrio un error ' + error.message });
-//     }
-// }
-
-// Función para recuperar un usuario usando su nickname
-// const getUsersByNickPass = async(req, res) => {
-//     try {
-//         const { nickname } = req.params;
-//         const Usuario = await User.find({'nickname': nickname});
-//         res.status(200).json(Usuario);
-//     } catch (error) {
-//         res.status(500).json({ message: 'Ocurrio un error ' + error.message });
-//     }
-// }
-
-// Función para recuperar un usuario usando su nickname y contraseña
-const getUserPass = async(req, res) => {
+// Obtener todos los usuarios
+const getAllUsers = async (req, res) => {
     try {
-        const email = req.body.nickname;
-        const Usuario = await User.find({'email': email});
-        res.status(200).json(Usuario);
+        const usuarios = await Usuario.find();
+        res.status(200).json(usuarios);
     } catch (error) {
-        res.status(500).json({ message: 'Ocurrio un error ' + error.message });
+        res.status(500).json({ message: 'Error: ' + error.message });
     }
-}
+};
 
-// Función crear un usuario (para el login)
-//registro unico de usuarios
-const crearUsuarios = async(req, res) => {
-    try {
-        const _Usuario = await Usuario.create( req.body );
-        res.status(200).json(_Usuario);
-    } catch (error) {
-        res.status(500).json({ message: 'Ocurrio un error' + error.message });
-    }
-}
-
-// Función para recuperar actualizar los datos de un usuario usando su identificador
-const updateUserById = async(req, res) => {
+// Obtener un usuario por ID
+const getUserById = async (req, res) => {
     try {
         const { id } = req.params;
-        const Usuario = await User.findByIdAndUpdate(id, req.body);
-        if (!Usuario)
-            return res.status(400).json({ message: 'El usuario no existe' });
-        const UsuarioActualizado = await User.find({ '_id':id });
-        res.status(200).json(UsuarioActualizado);
+        const usuario = await Usuario.findById(id);
+        if (!usuario) return res.status(404).json({ message: 'Usuario no encontrado' });
+        res.status(200).json(usuario);
     } catch (error) {
-        res.status(500).json({ message: 'Ocurrio un error ' + error.message });
+        res.status(500).json({ message: 'Error: ' + error.message });
     }
-}
+};
 
-// Función para eliminar un usuario usando su identificador
-const deleteUserById = async(req, res) => {
+// Crear un nuevo usuario
+const createUser = async (req, res) => {
+    try {
+        const usuario = await Usuario.create(req.body);
+        res.status(201).json(usuario);
+    } catch (error) {
+        res.status(500).json({ message: 'Error: ' + error.message });
+    }
+};
+
+// Actualizar un usuario por ID
+const updateUserById = async (req, res) => {
     try {
         const { id } = req.params;
-        const Usuario = await User.find({'_id': id});
-        if (!Usuario)
-            return res.status(400).json({ message: 'El usuario no existe' });
-        const Eliminado = await User.deleteOne({ '_id':id });
-        res.status(200).json({ message: 'Usuario eliminado' });
+        const usuario = await Usuario.findByIdAndUpdate(id, req.body, { new: true });
+        if (!usuario) return res.status(404).json({ message: 'Usuario no encontrado' });
+        res.status(200).json(usuario);
     } catch (error) {
-        res.status(500).json({ message: 'Ocurrio un error ' + error.message });
+        res.status(500).json({ message: 'Error: ' + error.message });
     }
-}
+};
+
+// Eliminar un usuario por ID
+const deleteUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const usuario = await Usuario.findByIdAndDelete(id);
+        if (!usuario) return res.status(404).json({ message: 'Usuario no encontrado' });
+        res.status(200).json({ message: 'Usuario eliminado correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error: ' + error.message });
+    }
+};
 
 module.exports = {
-    // getUsers,
-    // getUsersById,
-    // crearUsuarios,
-    // updateUserById,
-    // deleteUserById,
-    // getUsersByNickPass,
-    // getUsersByUserPass,
-    // getUsersByNickPass
-    getUserPass,
-    crearUsuarios,
+    getAllUsers,
+    getUserById,
+    createUser,
     updateUserById,
     deleteUserById
-}
+};
